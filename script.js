@@ -31,3 +31,25 @@ addButton.addEventListener("click", function () {
   subjectInput.value = "";
   timeInput.value = "";
 });
+
+function saveData() {
+  localStorage.setItem("studyData", list.innerHTML);
+}
+
+function loadData() {
+  const data = localStorage.getItem("studyData");
+  if (data) {
+    list.innerHTML = data;
+
+    const buttons = list.querySelectorAll("button");
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        btn.parentElement.remove();
+        saveData();
+      });
+    });
+  }
+}
+
+loadData();
+
