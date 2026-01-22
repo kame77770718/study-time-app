@@ -9,3 +9,6 @@
 - HTML
 - CSS
 - JavaScript
+
+## 今後の予定
+- JavaScriptで追加・表示機能を実装予定
