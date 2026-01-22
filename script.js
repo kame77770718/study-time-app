@@ -7,11 +7,12 @@ addButton.addEventListener("click", function () {
   const subject = subjectInput.value;
   const time = timeInput.value;
 
-  if (subject === "" || time === "") {
-    alert("科目名と時間を入力してください");
-    return;
-  }
+  if (subject.trim() === "" || time <= 0) {
+  alert("正しい科目名と時間を入力してください");
+  return;
+}
 
+function addItem(subject, time) {
   const li = document.createElement("li");
   li.textContent = subject + "：" + time + "時間 ";
 
@@ -25,12 +26,25 @@ addButton.addEventListener("click", function () {
 
   li.appendChild(deleteBtn);
   list.appendChild(li);
+}
 
+addButton.addEventListener("click", function () {
+  const subject = subjectInput.value;
+  const time = timeInput.value;
+
+  if (subject.trim() === "" || time <= 0) {
+    alert("正しい科目名と時間を入力してください");
+    return;
+  }
+
+  addItem(subject, time);
   saveData();
 
   subjectInput.value = "";
   timeInput.value = "";
 });
+
+  
 
 function saveData() {
   localStorage.setItem("studyData", list.innerHTML);
