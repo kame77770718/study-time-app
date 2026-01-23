@@ -2,9 +2,12 @@ const subjectInput = document.getElementById("subject");
 const timeInput = document.getElementById("time");
 const addButton = document.getElementById("add-btn");
 const list = document.getElementById("list");
+const form = document.getElementById("form");
 
 // 追加ボタン
-addButton.addEventListener("click", function () {
+form.addEventListener("submit", function (e) {
+  e.preventDefault(); //ページリロード防止
+  
   const subject = subjectInput.value;
   const time = Number(timeInput.value);
 
