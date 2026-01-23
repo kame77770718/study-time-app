@@ -3,6 +3,14 @@ body {
   background-color: #f4f4f4;
   padding: 20px;
 }
+input, button{
+  padding: 8px;
+  marigin-right: 5px;
+}
+
+li{
+  marigin-top: 8px
+}
 
 h1 {
   color: #333;
