@@ -13,8 +13,42 @@ addButton.addEventListener("click", function () {
     return;
   }
 
-  addItem(subject, time);
-  saveData();
+  addItem(subject, time) {
+    const li = document.createElement("li");
+    li.textContent = subject + ":" + time + "時間";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "削除";
+
+    deleteBtn.addEventListener("click", function () {
+      li.remove();
+      saveData();
+      updateTotalTime();
+    });
+
+    li.appendChild(deleteBtn);
+    list.appendChild(li);
+
+    updateTotalTime();
+  }
+
+  function loadData() {
+    const data = localStorage.getItem("studyData");
+    if (data) {
+      list.innerHTML = data;
+
+      const buttons = list.querySelecorAll("button");
+      buttons.forEach(function (btn) {
+        btn.addEventListenner("click", function () {
+          btn.parentElement.remove();
+          saveData();
+          updateTotalTime();
+        });
+      });
+    }
+    updateTotalTime();
+  }
+  
 
   subjectInput.value = "";
   timeInput.value = "";
@@ -35,6 +69,19 @@ function addItem(subject, time) {
 
   li.appendChild(deleteBtn);
   list.appendChild(li);
+}
+
+function updateTotalTime(){
+  let total = 0;
+
+  const items = list.querySelectorAll("li");
+  items.forEach(function (li){
+    const text = li.firstChild.textContent;
+    const time = Number(text.split(":")[1].replace("時間", ""));
+    total += time;
+  });
+
+  document.getElementById("total").textContent ="合計勉強時間：" + total + "時間";
 }
 
 // 保存
