@@ -101,8 +101,6 @@ function updateTotalTime() {
     "合計勉強時間：" + total + "時間";
 }
 
-  });
-
 // 保存
 function saveData() {
   localStorage.setItem("studyData", list.innerHTML);
