@@ -33,7 +33,16 @@ timeInput.addEventListener("keydown", function (e) {
 // 1件追加
 function addItem(subject, time) {
   const li = document.createElement("li");
-  li.textContent = subject + "：" + time + "時間 ";
+
+  const textSpan = document.createElement("span");
+  textSpan.textContent = subject +":";
+
+  const timeSpan = document.createElement("span");
+  timeSpan.textContent = time;
+  timeSpan.classList.add("time");
+
+  const unitSpan = document.createElement("span");
+  unitSpan.textContent = "時間";
 
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "削除";
@@ -44,21 +53,61 @@ function addItem(subject, time) {
     updateTotalTime();
   });
 
-  li.appendChild(deleteBtn);
-  list.appendChild(li);
+  timeSpan.addEventListener("click", function () {
+    editTime(timeSpan);
+  });
 
+  li.appendChild(textSpan);
+  li.appendChild(timeSpan);
+  li.appendChild(unitSpan);
+  li.appendChild(deleteBtn);
+  
+  list.appendChild(li);
   updateTotalTime();
+}
+
+function editTime(timeSpan){
+  const currentTime = timeSpan.textContent;
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.value = currentTime;
+  input.style.width = "60px";
+
+  timeSpan.replaceWith(input);
+  input.focus();
+
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter"){
+      const newTime = Number(input.value);
+
+      if(newTime <= 0) {
+        alert("正しい時間を入力してください");
+        return;
+      }
+
+      timeSpan.textContent = newTime;
+      input.replaceWith(timeSpan);
+
+      saveData();
+      updateTotalTime();
+    }
+  });
 }
 
 // 合計時間
 function updateTotalTime() {
   let total = 0;
 
-  const items = list.querySelectorAll("li");
-  items.forEach(function (li) {
-    const text = li.firstChild.textContent;
-    const time = Number(text.split("：")[1].replace("時間", ""));
-    total += time;
+  const timeSpans = list.querySelectorAll(".time");
+  timeSpans.forEach(function (span) {
+    total += Number(span.textContent);
+  });
+
+  document.getElementById("total").textContent =
+    "合計勉強時間：" + total + "時間";
+}
+
   });
 
   document.getElementById("total").textContent =
