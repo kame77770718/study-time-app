@@ -5,6 +5,7 @@ const list = document.getElementById("list");
 const form = document.getElementById("form");
 
 // 追加ボタン
+let studyData = [];
 form.addEventListener("submit", function (e) {
   e.preventDefault(); //ページリロード防止
   
@@ -16,111 +17,87 @@ form.addEventListener("submit", function (e) {
     return;
   }
 
-  addItem(subject, time);
+  studyData.push({
+    subject: subject,
+    time: time,
+    date: getToday()
+  });
+  
   saveData();
+  renderList();
+  updateTotalTime();
 
   subjectInput.value = "";
   timeInput.value = "";
 });
 
-// 1件追加
-function addItem(subject, time) {
-  const li = document.createElement("li");
-
-  const textSpan = document.createElement("span");
-  textSpan.textContent = subject +":";
-
-  const timeSpan = document.createElement("span");
-  timeSpan.textContent = time;
-  timeSpan.classList.add("time");
-
-  const unitSpan = document.createElement("span");
-  unitSpan.textContent = "時間";
-
-  const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "削除";
-
-  deleteBtn.addEventListener("click", function () {
-    li.remove();
-    saveData();
-    updateTotalTime();
-  });
-
-  timeSpan.addEventListener("click", function () {
-    editTime(timeSpan);
-  });
-
-  li.appendChild(textSpan);
-  li.appendChild(timeSpan);
-  li.appendChild(unitSpan);
-  li.appendChild(deleteBtn);
-  
-  list.appendChild(li);
-  updateTotalTime();
+function getToday(){
+  const d = new Date();
+  return d.toISOString().split("T")[0];
 }
 
-function editTime(timeSpan){
-  const currentTime = timeSpan.textContent;
+function renderList() {
+  list.innerHTML = "";
 
-  const input = document.createElement("input");
-  input.type = "number";
-  input.value = currentTime;
-  input.style.width = "60px";
+  studyData.forEach((item, index) => {
+    const li = document.createElement("li");
 
-  timeSpan.replaceWith(input);
-  input.focus();
+    li.innerHTML =`
+      <span>${item.subject}</span>
+      <span class="time">${item.time}</span>
+      <span>時間</span>
+      <button data-index="${index}">削除</button>
+  `;
 
-  input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter"){
-      const newTime = Number(input.value);
-
-      if(newTime <= 0) {
-        alert("正しい時間を入力してください");
-        return;
-      }
-
-      timeSpan.textContent = newTime;
-      input.replaceWith(timeSpan);
-
+    li.querySelector("button").addEventListener("click", () => {
+      studyData.splice(index, 1);
       saveData();
+      renderList();
       updateTotalTime();
-    }
+    });
+
+    list.appendChild(li);
   });
+}
+
+function getTodayTotal(){
+  const today = getToday();
+  return studyData
+    .filter(item => item.date === today)
+    .reduce((sum, item) => sum + item.time, 0);
+}
+
+function getWeekTotal(){
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+
+  return studyData.filter(item => {
+    const d = new Date(item.date);
+    return d >= weekStart && d <= now;
+  }).reduce((sum, item) => sum + item.time, 0);
 }
 
 // 合計時間
 function updateTotalTime() {
-  let total = 0;
+  const todayTotal = getTodayTotal();
+  const weekTotal = getWeekTotal();
 
-  const timeSpans = list.querySelectorAll(".time");
-  timeSpans.forEach(function (span) {
-    total += Number(span.textContent);
-  });
-
-  document.getElementById("total").textContent =
-    "合計勉強時間：" + total + "時間";
+  document.getElementById("total").textContent =`今日:${todayTotal}時間 / 今週:${weekTotal}時間`;
 }
 
 // 保存
 function saveData() {
-  localStorage.setItem("studyData", list.innerHTML);
+  localStorage.setItem("studyData", JSON.stringify(studyData));
 }
 
 // 読み込み
 function loadData() {
   const data = localStorage.getItem("studyData");
   if (data) {
-    list.innerHTML = data;
-
-    const buttons = list.querySelectorAll("button");
-    buttons.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        btn.parentElement.remove();
-        saveData();
-        updateTotalTime();
-      });
-    });
+    studyData = JSON.parse(data);
   }
+  renderList();
   updateTotalTime();
 }
 
