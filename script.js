@@ -23,13 +23,6 @@ form.addEventListener("submit", function (e) {
   timeInput.value = "";
 });
 
-// Enterキー対応（時間入力欄でEnter）
-timeInput.addEventListener("keydown", function (e) {
-  if (e.key === "Enter") {
-    addButton.click();
-  }
-});
-
 // 1件追加
 function addItem(subject, time) {
   const li = document.createElement("li");
@@ -109,10 +102,6 @@ function updateTotalTime() {
 }
 
   });
-
-  document.getElementById("total").textContent =
-    "合計勉強時間：" + total + "時間";
-}
 
 // 保存
 function saveData() {
