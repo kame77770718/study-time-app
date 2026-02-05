@@ -1,6 +1,5 @@
 const subjectInput = document.getElementById("subject");
 const timeInput = document.getElementById("time");
-const addButton = document.getElementById("add-btn");
 const list = document.getElementById("list");
 const form = document.getElementById("form");
 
@@ -70,7 +69,8 @@ function getTodayTotal(){
 function getWeekTotal(){
   const now = new Date();
   const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - now.getDay());
+  const day = now.getDay() === 0 ? 6 : now.getDay() - 1;
+  weekStart.setDate(now.getDate() - day);
 
   return studyData.filter(item => {
     const d = new Date(item.date);
